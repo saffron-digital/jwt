@@ -24,8 +24,8 @@ func RunTest(t *testing.T, command func(Algorithm)) {
 func TestEncodeAndValidateToken(t *testing.T) {
 	RunTest(t, func(algorithm Algorithm) {
 		payload := NewClaim()
-		payload.SetTime("nbf", time.Now().Add(time.Duration(-1) * time.Hour))
-		payload.SetTime("exp", time.Now().Add(time.Duration(100) * time.Hour))
+		payload.SetTime("nbf", time.Now().Add(time.Duration(-1)*time.Hour))
+		payload.SetTime("exp", time.Now().Add(time.Duration(100)*time.Hour))
 
 		token, err := algorithm.Encode(payload)
 		if err != nil {
@@ -35,6 +35,26 @@ func TestEncodeAndValidateToken(t *testing.T) {
 		err = algorithm.Validate(token)
 		if err != nil {
 			t.Fatal(err)
+		}
+	})
+}
+
+func TestCaseOfHeaderElements(t *testing.T) {
+	RunTest(t, func(algorithm Algorithm) {
+		header := algorithm.NewHeader()
+		j, err := json.Marshal(header)
+		if err != nil {
+			t.Fatal(err)
+		}
+		encodedJSON := string(j)
+		if !strings.Contains(encodedJSON, "alg") {
+			t.Fatal("Does not contain alg")
+		}
+		if !strings.Contains(encodedJSON, "typ") {
+			t.Fatal("Does not contain typ")
+		}
+		if !strings.Contains(encodedJSON, "cty") {
+			t.Fatal("Does not contain cty")
 		}
 	})
 }
@@ -90,7 +110,7 @@ func TestVerifyTokenNbf(t *testing.T) {
 	RunTest(t, func(algorithm Algorithm) {
 
 		payload := NewClaim()
-		payload.SetTime("nbf", time.Now().Add(time.Duration(1) * time.Hour))
+		payload.SetTime("nbf", time.Now().Add(time.Duration(1)*time.Hour))
 
 		err := json.Unmarshal([]byte(`{"sub":"1234567890","name":"John Doe","admin":true}`), &payload)
 		if err != nil {
