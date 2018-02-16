@@ -47,7 +47,7 @@ func (a *Algorithm) Sign(unsignedToken string) (string, error) {
 		return "", errors.Wrap(err, "Unable to write to HMAC-SHA256")
 	}
 
-	encodedToken := base64.RawURLEncoding.EncodeToString(a.sum(nil))
+	encodedToken := string(a.sum(nil))
 	a.reset()
 
 	return encodedToken, nil
